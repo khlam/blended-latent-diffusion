@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./inputs:/inputs
+      - ./outputs:/app/outputs
+      - ./huggingface_cache:/root/.cache/huggingface
+    environment:
+      PROMPT: "cat reflection in small water puddle"
+      INIT_IMAGE: "/inputs/img.png"
+      MASK: "/inputs/mask.png"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
