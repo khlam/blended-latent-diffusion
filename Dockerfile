@@ -8,22 +8,22 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-pip \
     git \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Upgrade pip
-RUN pip3 install --no-cache-dir torch torchvision torchaudio
-
-RUN pip3 install ftfy regex matplotlib lpips opencv-python torch torchvision torchaudio transformers diffusers==0.19.3 accelerate
-
-# Install additional packages from git repositories
+# Upgrade pip and install Python dependencies
 RUN pip3 install --no-cache-dir \
+    torch torchvision torchaudio \
+    ftfy regex matplotlib lpips opencv-python \
+    transformers diffusers==0.19.3 accelerate \
     git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers \
     git+https://github.com/openai/CLIP.git@main#egg=clip
 
+# Set environment variables
 ENV PROMPT=""
 ENV INIT_IMAGE=""
 ENV MASK=""
 
+# Copy application files
 COPY configs /app/configs
 COPY data /app/data
 COPY general_utils /app/general_utils
@@ -31,6 +31,10 @@ COPY ldm /app/ldm
 COPY models /app/models
 COPY scripts /app/scripts
 
-# Set the entrypoint
-#ENTRYPOINT ["sh", "-c", "python3 -u /app/scripts/text_editing_SDXL.py --prompt \"$PROMPT\" --init_image \"$INIT_IMAGE\" --mask \"$MASK\""]
+# entrypoints
+
+FROM base AS SDXL
+ENTRYPOINT ["sh", "-c", "python3 -u /app/scripts/text_editing_SDXL.py --prompt \"$PROMPT\" --init_image \"$INIT_IMAGE\" --mask \"$MASK\""]
+
+FROM base as SD2
 ENTRYPOINT ["sh", "-c", "python3 -u /app/scripts/text_editing_SD2.py --prompt \"$PROMPT\" --init_image \"$INIT_IMAGE\" --mask \"$MASK\""]
