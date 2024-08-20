@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: SD2
+      target: sd2
     volumes:
       - ./inputs:/inputs
       - ./outputs:/app/outputs

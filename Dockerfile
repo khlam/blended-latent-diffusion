@@ -33,8 +33,8 @@ COPY scripts /app/scripts
 
 # entrypoints
 
-FROM base AS SDXL
+FROM base AS sdxl
 ENTRYPOINT ["sh", "-c", "python3 -u /app/scripts/text_editing_SDXL.py --prompt \"$PROMPT\" --init_image \"$INIT_IMAGE\" --mask \"$MASK\""]
 
-FROM base as SD2
+FROM base as sd2
 ENTRYPOINT ["sh", "-c", "python3 -u /app/scripts/text_editing_SD2.py --prompt \"$PROMPT\" --init_image \"$INIT_IMAGE\" --mask \"$MASK\""]
